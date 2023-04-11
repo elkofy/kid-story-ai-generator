@@ -2,9 +2,9 @@
     <div>
         <h2>{{ title }}</h2>
         <template v-for="chapter in story" :key="index">
-            <div>
+            <div class="story-block">
                 <img :src="chapter.image" />
-                <p>{{ chapter.paragraph }}</p>
+                <p >{{ chapter.paragraph }}</p>
             </div>
         </template>
 
@@ -20,13 +20,36 @@ const props =
             required: true
         },
         story: {
-            type: Array,
+            type: Array<any>,
             required: true
         }
-    },
-
-
-    )
+    }
+    );
 
 </script>
-<style></style>
+<style>
+.story-block {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: center;
+    margin: 2rem;
+}
+
+.story-block img {
+    width: 20rem;
+    height: 20rem;
+    object-fit: cover;
+    margin-right: 2rem;
+    margin-top: 8px;;
+}
+
+.story-block p {
+    width: 50%;
+    font-size: 1.5rem;
+    text-align: justify;
+    margin: 0;
+}
+
+
+</style>
