@@ -30,7 +30,7 @@ const StoryFromApi = ref({
 });
 
 
-const generateStory = (formObject: object) => {
+const generateStory = (formObject: any) => {
   let object = toRaw(formObject);
 
   if (object.story === '') {

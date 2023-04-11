@@ -34,6 +34,7 @@
         <button @click="addCharacter">Ajouter un personnage</button>
         <button class="submit-btn" @click="$emit('submit', formModel)">Generate 💫</button>
     </div>
+
 </template>
 
 <script setup lang="ts">

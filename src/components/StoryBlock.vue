@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>{{ title }}</h2>
-        <template v-for="(chapter, index) in story">
+        <template v-for="chapter in story" :key="index">
             <div>
                 <img :src="chapter.image" />
                 <p>{{ chapter.paragraph }}</p>
