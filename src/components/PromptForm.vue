@@ -1,6 +1,6 @@
 
 <template>
-    <div id="form">
+    <div id="ai-form">
         <div class="text-input">
             <textarea placeholder="C'est l'histoire de ..." v-model="formModel.story"></textarea>
         </div>
@@ -63,13 +63,13 @@ const removeCharacter = (index: number) => {
 }
 </script>
 <style scoped>
-#form {
+#ai-form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
-    width: 50%;
+    width: 35%;
     height: 50%;
     border-radius: 5px;
     background-color: #f2f2f2;
