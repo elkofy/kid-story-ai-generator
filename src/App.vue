@@ -48,9 +48,21 @@ const generateStory = (formObject: any) => {
   else {
     isGenerated.value = true;
     console.log(object);
+    callServer(object);
     console.log("generate story");
   }
 };
+
+
+const callServer = async (object:any) =>{
+  await fetch(`http://localhost:3000/generate-story`,{
+    method:"POST",
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({object})}).then(res=>res.json()).then((response)=>{
+      console.log(response);
+      StoryFromApi.value = response;
+    })
+}
 
 const goBackToGeneration = () => {
   isGenerated.value = false;
