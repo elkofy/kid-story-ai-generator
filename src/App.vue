@@ -49,18 +49,6 @@ const generateStory = (formObject: any) => {
   }
 };
 
-
-const callServer = async (object:any) =>{
-  await fetch(`http://localhost:3000/generate-story`,{
-    method:"POST",
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({object})}).then(res=>res.json()).then((response)=>{
-      console.log(response);
-      StoryFromApi.value = response;
-    })
-}
-
-
 const callServer = async (object:any) =>{
   await fetch(`http://localhost:8080/api/story/new`,{
     method:"POST",
