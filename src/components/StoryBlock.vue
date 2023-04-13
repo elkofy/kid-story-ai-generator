@@ -4,7 +4,7 @@
         <template v-for="chapter in story" :key="index">
             <div class="story-block">
                 <img :src="chapter.image" />
-                <p >{{ chapter.paragraph }}</p>
+                <p>{{ chapter.paragraph }}</p>
             </div>
         </template>
 
@@ -13,18 +13,18 @@
     <button class="submit-btn" @click="$emit('goBack')">Go Back to Generation 💫</button>
 </template>
 <script setup lang="ts">
-const props =
-    defineProps({
-        title: {
-            type: String,
-            required: true
-        },
-        story: {
-            type: Array<any>,
-            required: true
-        }
+
+defineProps({
+    title: {
+        type: String,
+        required: true
+    },
+    story: {
+        type: Array<any>,
+        required: true
     }
-    );
+}
+);
 
 </script>
 <style>
@@ -41,7 +41,8 @@ const props =
     height: 20rem;
     object-fit: cover;
     margin-right: 2rem;
-    margin-top: 8px;;
+    margin-top: 8px;
+    ;
 }
 
 .story-block p {
@@ -50,6 +51,4 @@ const props =
     text-align: justify;
     margin: 0;
 }
-
-
 </style>
