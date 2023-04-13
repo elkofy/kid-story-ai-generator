@@ -13,10 +13,12 @@ const router = createRouter({
             component: () => import("../components/views/Register.vue"),
         },
         {
+            name: "Stories",
             path: "/stories",
             component: () => import("../components/views/Stories.vue"),
         },
         {
+            name: "Story",
             path: "/stories/:id",
             component: () => import("../components/views/Story.vue"),
         },

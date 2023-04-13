@@ -16,11 +16,26 @@
 
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue';
+import router from '../../router';
 const Stories = ref<any[]>([]);
+
+const getUserStories = () => {
+    fetch('http://localhost:8080/api/story/all', {
+        headers: {
+            "Content-Type": "application/json",
+            'x-access-token': localStorage.getItem('token') || ''
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            Stories.value = data.stories;
+        })
+}
 onBeforeMount(() => {
     console.log('Stories');
+    getUserStories();
     Stories.value = [
-        {   
+        {
             id: 1,
             title: 'Le petit chaperon rouge',
             cover: 'https://images.unsplash.com/photo-1512331455279-c8ae8178f586?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2232&q=80',
@@ -46,6 +61,7 @@ onBeforeMount(() => {
 
 const gotToStory = (id: number) => {
     console.log('go to story', id);
+    router.push({ name: 'Story', params: { id } });
 }
 </script>
 
@@ -94,5 +110,4 @@ const gotToStory = (id: number) => {
     justify-self: center;
 
 }
-
 </style>
