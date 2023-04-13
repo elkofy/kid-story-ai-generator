@@ -3,14 +3,46 @@
         <h3>Bienvenue 😁</h3>
 
         <label for="username">Username</label>
-        <input type="text" placeholder="Email" id="username">
+        <input v-model="registerForm.username" type="text" placeholder="username" id="username">
 
         <label for="password">Mot de passe</label>
-        <input type="password" placeholder="Mot de passe" id="password">
-        <button>S'inscrire</button>
+        <input v-model="registerForm.password" type="password" placeholder="Mot de passe" id="password">
+       
+        <button @click="registerUser">S'inscrire</button>
+
     </div>
 </template>
 
+<script setup lang="ts">
+import { ref } from "vue";
+import router from "../../router";
+
+const registerForm = ref({
+    username: '',
+    password: ''
+})
+
+const registerUser = async () => {
+    fetch('http://localhost:8080/api/auth/signup', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(registerForm.value)
+    })
+        .then(res => res.json())
+        .then((response) => {
+            console.log(response)
+            router.push('/login');
+        })
+        .catch((err) => {
+            console.log(err)
+            localStorage.setItem('isLoggedIn', 'false')
+
+        })
+
+}
+</script>
 <style>
 *,
 *:before,

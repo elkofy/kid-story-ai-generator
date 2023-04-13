@@ -3,14 +3,44 @@
         <h3>Content de vous revoir 😁</h3>
 
         <label for="username">Username</label>
-        <input type="text" placeholder="Email" id="username">
+        <input v-model="loginForm.username" type="text" placeholder="username" id="username">
 
         <label for="password">Mot de passe</label>
-        <input type="password" placeholder="Mot de passe" id="password">
-        <button >Se connecter</button>
+        <input v-model="loginForm.password" type="password" placeholder="Mot de passe" id="password">
+        <button @click="loginUser">Se connecter</button>
     </div>
 </template>
+<script setup lang="ts">
+import { ref } from "vue";
+import router from "../../router";
+const loginForm = ref({
+    username: '',
+    password: ''
+})
+const emit = defineEmits(['update:navbar'])
 
+const loginUser = async () => {
+    fetch('http://localhost:8080/api/auth/signin', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginForm.value)
+    })
+        .then(res => res.json())
+        .then((response) => {
+            localStorage.setItem('token', response.accessToken)
+            localStorage.setItem('username', response.username)
+            localStorage.setItem('isLoggedIn', 'true')
+            emit('update:navbar')
+            router.push('/');
+        })
+        .catch((err) => {
+            localStorage.setItem('isLoggedIn', 'false')
+        })
+
+}
+</script>
 <style>
 *,
 *:before,
@@ -72,7 +102,4 @@ input {
 ::placeholder {
     color: #e5e5e5;
 }
-
-
-
 </style>
