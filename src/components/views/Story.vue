@@ -73,6 +73,7 @@ const getStoryById = (storyId: string) => {
         .then(res => res.json())
         .then((response) => {
             Story.value = response;
+            Story.value.storyId = storyId;
 
         })
         .catch((err) => {
@@ -95,7 +96,7 @@ const continueStory = async () =>{
 }
 
 const redoStory = async () =>{
-  console.log(JSON.stringify(Story.value.story[Story.value.story.length-1]))
+  console.log(JSON.stringify(Story.value))
   await fetch(`http://localhost:8080/api/story/remake`,{
     method:"POST",
     headers: {
