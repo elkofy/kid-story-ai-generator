@@ -1,6 +1,6 @@
 <template>
     <h2>{{ Story.title }}</h2>
-    <template v-for="chapter in Story.chapters" :key="index">
+    <template v-for="chapter in Story.story" :key="index">
         <div class="story-block">
             <img :src="chapter.image" />
             <p>{{ chapter.paragraph }}</p>
@@ -15,11 +15,12 @@ import { ref, onBeforeMount } from 'vue';
 import router from '../../router';
 const Story = ref({
     title: '',
-    chapters: [{
+    story: [{
             paragraph: "",
             image: "",
         },
-    ]
+    ],
+    storyId: "",
 });
 
 
@@ -64,31 +65,31 @@ const getStoryById = (storyId: string) => {
 }
 
 const continueStory = async () =>{
-  console.log(JSON.stringify(Story.value.chapters[Story.value.chapters.length-1]))
+  console.log(JSON.stringify(Story.value.story[Story.value.story.length-1]))
   await fetch(`http://localhost:8080/api/story/continue`,{
     method:"POST",
     headers: {
       'Content-Type': 'application/json',
       'x-access-token' : localStorage.getItem("token") || ""
     },
-    body: JSON.stringify(Story.value.chapters[Story.value.chapters.length-1])}).then(res=>res.json()).then((response:any)=>{
+    body: JSON.stringify(Story.value)}).then(res=>res.json()).then((response:any)=>{
       console.log(response);
-      Story.value.chapters.push(response.story[0]);
+      Story.value.story.push(response.story[0]);
     })
 }
 
 const redoStory = async () =>{
-  console.log(JSON.stringify(Story.value.chapters[Story.value.chapters.length-1]))
+  console.log(JSON.stringify(Story.value.story[Story.value.story.length-1]))
   await fetch(`http://localhost:8080/api/story/remake`,{
     method:"POST",
     headers: {
       'Content-Type': 'application/json',
       'x-access-token' : localStorage.getItem("token") || ""
         },
-    body: JSON.stringify(Story.value.chapters[Story.value.chapters.length-1])}).then(res=>res.json()).then((response:any)=>{
+    body: JSON.stringify(Story.value)}).then(res=>res.json()).then((response:any)=>{
       console.log(response);
-      Story.value.chapters.pop();
-      Story.value.chapters.push(response.story[0]);
+      Story.value.story.pop();
+      Story.value.story.push(response.story[0]);
     })
 }
 

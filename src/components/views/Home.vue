@@ -21,6 +21,7 @@ const StoryFromApi = ref({
             image: "https://www.imagesource.com/cache/pcache2/00261816.jpg",
         },
     ],
+    storyId: "",
 });
 
 const addAChapter = () => {
@@ -82,14 +83,14 @@ const callServer = async (object:any) =>{
 }
 
 const continueStory = async () =>{
-  console.log(JSON.stringify(StoryFromApi.value.story[StoryFromApi.value.story.length-1]))
+  console.log(JSON. stringify(StoryFromApi.value.story[StoryFromApi.value.story.length-1]))
   await fetch(`http://localhost:8080/api/story/continue`,{
     method:"POST",
     headers: {
       'Content-Type': 'application/json',
       'x-access-token' : localStorage.getItem("token") || ""
     },
-    body: JSON.stringify(StoryFromApi.value.story[StoryFromApi.value.story.length-1])}).then(res=>res.json()).then((response)=>{
+    body: JSON.stringify(StoryFromApi.value)}).then(res=>res.json()).then((response)=>{
       console.log(response);
       StoryFromApi.value.story.push(response.story[0]);
     })
@@ -102,8 +103,8 @@ const redoStory = async () =>{
     headers: {
       'Content-Type': 'application/json',
       'x-access-token' : localStorage.getItem("token") || ""
-    },
-    body: JSON.stringify(StoryFromApi.value.story[StoryFromApi.value.story.length-1])}).then(res=>res.json()).then((response)=>{
+        },
+    body: JSON.stringify(StoryFromApi.value)}).then(res=>res.json()).then((response)=>{
       console.log(response);
       StoryFromApi.value.story.pop();
       StoryFromApi.value.story.push(response.story[0]);
