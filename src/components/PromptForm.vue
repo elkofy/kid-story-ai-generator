@@ -22,8 +22,9 @@
                 <option>Enfantin</option>
             </select>
         </div>
+        <button @click="addCharacter">Ajouter un personnage</button>
         <template v-if="characters.length">
-            <label for="genre">Personnages:</label>
+            <label for="genre">Personnages:</label>      
             <div class="text-input" v-for="(character, index) in characters">
                 <div class="character-input">
                     <input type="text" id="sujet" v-model="formModel.characters[index]" />
@@ -31,10 +32,13 @@
                 </div>
             </div>
         </template>
-        <button @click="addCharacter">Ajouter un personnage</button>
-        <button class="submit-btn" @click="$emit('submit', formModel)">Generate 💫</button>
-    </div>
+      
+        <div class="submit-panel-btn">
+            <button class="submit-btn" @click="$emit('submit', formModel)">Generez 💫</button>
+            <button class="submit-btn" @click="$emit('submit:ia', formModel)">L'IA décide 🤖</button>
+        </div>
 
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -134,6 +138,14 @@ textarea {
     width: 100%;
     gap: 4px;
 }
+.submit-panel-btn{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+}
 
 .submit-btn {
     background-color: #4CAF50;
@@ -144,7 +156,6 @@ textarea {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px 2px;
     cursor: pointer;
 }
 </style>

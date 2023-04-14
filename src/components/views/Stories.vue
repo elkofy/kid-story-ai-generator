@@ -1,12 +1,18 @@
 <template>
     <div class="card-container">
-        <template v-for="story in Stories" :key="story.id">
+        <template v-if="Stories.length === 0">
+            <p style="width: max-content;">
+                Vous n'avez aucune histoires pour le moment... 😔<br>Commencez par en créer une ! 🤗
+            </p>
+            <button class="submit-btn" @click="() => { router.push('/') }">Créer une histoire</button>
+        </template>
+        <template v-else v-for="story in Stories" :key="story.id">
             <div class="history-card" @click="gotToStory(story.id)">
                 <p>
                     {{ story.title }}
                 </p>
                 <img :src="story.cover" />
-                <p>
+                <p class="text-desc">
                     {{ story.firstParagraph }}
                 </p>
             </div>
@@ -30,45 +36,33 @@ const getUserStories = () => {
         .then(data => {
             Stories.value = data.stories;
         })
+
+
 }
 onBeforeMount(() => {
-    console.log('Stories');
     getUserStories();
-    Stories.value = [
-        {
-            id: 1,
-            title: 'Le petit chaperon rouge',
-            cover: 'https://images.unsplash.com/photo-1512331455279-c8ae8178f586?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2232&q=80',
-            firstParagraph: 'Le petit chaperon rouge est une histoire de conte de fées. Elle raconte l\'histoire d\'une fillette qui va rendre visite à sa grand-mère malade. Elle se fait attaquer par un loup-garou et est sauvée par un chasseur.'
-        },
-        {
-            id: 2,
-            title: 'Le grand méchant loup',
-            cover: 'https://images.unsplash.com/photo-1462759353907-b2ea5ebd72e7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGZhaXJ5JTIwdGFsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60',
-            firstParagraph: 'Le petit chaperon rouge est une histoire de conte de fées. Elle raconte l\'histoire d\'une fillette qui va rendre visite à sa grand-mère malade. Elle se fait attaquer par un loup-garou et est sauvée par un chasseur.'
-        },
-        {
-            id: 3,
-            title: 'Les trois petits cochons',
-            cover: 'https://images.unsplash.com/photo-1558127920-90f28455f888?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhaXJ5JTIwdGFsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60',
-            firstParagraph: 'Le petit chaperon rouge est une histoire de conte de fées. Elle raconte l\'histoire d\'une fillette qui va rendre visite à sa grand-mère malade. Elle se fait attaquer par un loup-garou et est sauvée par un chasseur.'
-        },
-    ];
-
 }
 );
 
 
 const gotToStory = (id: number) => {
-    console.log('go to story', id);
     router.push({ name: 'Story', params: { id } });
 }
+
+const checkIfImageExists = (url: string) => {
+    const img = new Image();
+    img.src = url;
+    if (img.complete) {
+        return url
+    } else {
+        return "https://media.tenor.com/V9Z08mOcTJwAAAAC/this-content-is-not-available.gif";
+
+    }
+};
 </script>
 
 <style scoped>
 .history-card {
-    width: 300px;
-    height: 400px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -97,6 +91,9 @@ const gotToStory = (id: number) => {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .card-container {
@@ -109,5 +106,14 @@ const gotToStory = (id: number) => {
     align-items: center;
     justify-self: center;
 
+}
+
+.text-desc {
+    font-size: 14px;
+    height: 10.8rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 8;
+    overflow: hidden;
 }
 </style>

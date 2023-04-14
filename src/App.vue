@@ -1,7 +1,7 @@
 <template>
   <div>
     <Navbar :key="key" />
-    <h1>Kid Story Ai Generator</h1>
+    <h3>Kid Story Ai Generator</h3>
     <router-view v-slot="{ Component }">
       <transition name="fade">
         <component :is="Component" @update:navbar="key++;" />

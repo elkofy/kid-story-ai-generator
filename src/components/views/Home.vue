@@ -1,10 +1,15 @@
-    <template>
+<template>
     <h2 v-if="!isGenerated">Generate your story 📖</h2>
-    <PromptForm v-if="!isGenerated" @submit="generateStory" />
+    <PromptForm v-if="!isGenerated" @submit="generateStory" @submit:ia="generateWithIa" />
     <template v-else>
-        <button @click="addAChapter">Ajouter un chapitre</button>
-        <button @click="redoAChapter">Régénérer le dernier chapitre</button>
-        <StoryBlock :title="StoryFromApi.title" :story="StoryFromApi.story" @goBack="goBackToGeneration" />
+        <StoryBlock :isLoaded="isLoaded" :title="StoryFromApi.title" :story="StoryFromApi.story"
+            @goBack="goBackToGeneration" />
+        <div v-if="loadAnimation" class="lds-hourglass"></div>
+
+        <div class="btn-panel">
+            <button @click="addAChapter" :disabled="!isLoaded || loadAnimation">Ajouter un chapitre</button>
+            <button @click="redoAChapter" :disabled="!isLoaded || loadAnimation">Régénérer le dernier chapitre</button>
+        </div>
     </template>
 </template>
 <script setup lang="ts">
@@ -13,107 +18,103 @@ import PromptForm from "../PromptForm.vue";
 import StoryBlock from "../StoryBlock.vue";
 
 const isGenerated = ref<boolean>(false);
+const isLoaded = ref<boolean>(false);
+const loadAnimation = ref<boolean>(false);
 const StoryFromApi = ref({
     title: "empty",
     story: [
         {
-            paragraph: "MOCK paragraph",
-            image: "https://www.imagesource.com/cache/pcache2/00261816.jpg",
+            paragraph: "",
+            image: "",
         },
     ],
     storyId: "",
 });
 
 const addAChapter = () => {
-    console.log("add a chapter");
-    /*StoryFromApi.value.story.push(
-        {
-            paragraph: "Camille avait toujours rêvé de partir en voyage autour du monde, mais elle avait toujours eu une bonne raison de repousser ce rêve : le travail, la famille, les obligations. Mais un jour, elle a décidé qu'elle en avait assez d'attendre et qu'il était temps de partir à l'aventure. Elle a réservé un billet d'avion pour le lendemain et a commencé à préparer ses affaires. Elle était excitée et un peu effrayée à l'idée de partir seule, mais elle savait que c'était quelque chose qu'elle devait faire.",
-            image: "https://www.imagesource.com/cache/pcache2/00261816.jpg",
-        }
-    )*/
     continueStory()
 };
 
 const redoAChapter = () => {
-    console.log("redo a chapter");
-    /*StoryFromApi.value.story.push(
-        {
-            paragraph: "Camille avait toujours rêvé de partir en voyage autour du monde, mais elle avait toujours eu une bonne raison de repousser ce rêve : le travail, la famille, les obligations. Mais un jour, elle a décidé qu'elle en avait assez d'attendre et qu'il était temps de partir à l'aventure. Elle a réservé un billet d'avion pour le lendemain et a commencé à préparer ses affaires. Elle était excitée et un peu effrayée à l'idée de partir seule, mais elle savait que c'était quelque chose qu'elle devait faire.",
-            image: "https://www.imagesource.com/cache/pcache2/00261816.jpg",
-        }
-    )*/
     redoStory()
 };
 
+
+const generateWithIa = (formObject: any) => {
+    isGenerated.value = true;
+    callServer(formObject);
+}
 
 const generateStory = (formObject: any) => {
     let object = toRaw(formObject);
 
     if (object.story === '') {
-        alert('Please enter a story');
+        alert('Entrer une histoire');
     }
     else if (object.genre === '') {
-        alert('Please enter a genre');
+        alert('Entrer un genre');
     }
     else if (object.style === '') {
-        alert('Please enter a style');
-    }
-    else if (object.characters.length === 0) {
-        alert('Please enter a characters');
+        alert('Entrer un style');
     }
     else {
         isGenerated.value = true;
-        console.log(object);
         callServer(object);
     }
 };
 
-const callServer = async (object:any) =>{
-  await fetch(`http://localhost:8080/api/story/new`,{
-    method:"POST",
-    headers: {
-      'Content-Type': 'application/json',
-      'x-access-token' : localStorage.getItem("token") || ""
-    },
-    body: JSON.stringify(object)}).then(res=>res.json()).then((response)=>{
-      console.log(response);
-      StoryFromApi.value = response;
-    })
-}
-
-const continueStory = async () =>{
-  console.log(JSON. stringify(StoryFromApi.value.story[StoryFromApi.value.story.length-1]))
-  await fetch(`http://localhost:8080/api/story/continue`,{
-    method:"POST",
-    headers: {
-      'Content-Type': 'application/json',
-      'x-access-token' : localStorage.getItem("token") || ""
-    },
-    body: JSON.stringify(StoryFromApi.value)}).then(res=>res.json()).then((response)=>{
-      console.log(response);
-      StoryFromApi.value.story.push(response.story[0]);
-    })
-}
-
-const redoStory = async () =>{
-  console.log(JSON.stringify(StoryFromApi.value.story[StoryFromApi.value.story.length-1]))
-  await fetch(`http://localhost:8080/api/story/remake`,{
-    method:"POST",
-    headers: {
-      'Content-Type': 'application/json',
-      'x-access-token' : localStorage.getItem("token") || ""
+const callServer = async (object: any) => {
+    isLoaded.value = false;
+    await fetch(`http://localhost:8080/api/story/new`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': localStorage.getItem("token") || ""
         },
-    body: JSON.stringify(StoryFromApi.value)}).then(res=>res.json()).then((response)=>{
-      console.log(response);
-      StoryFromApi.value.story.pop();
-      StoryFromApi.value.story.push(response.story[0]);
+        body: JSON.stringify(object)
+    }).then(res => res.json()).then((response) => {
+        console.log(response);
+        StoryFromApi.value = response;
     })
+    isLoaded.value = true;
+
+}
+
+const continueStory = async () => {
+    loadAnimation.value = true;
+    await fetch(`http://localhost:8080/api/story/continue`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': localStorage.getItem("token") || ""
+        },
+        body: JSON.stringify(StoryFromApi.value)
+    }).then(res => res.json()).then((response) => {
+        console.log(response);
+        StoryFromApi.value.story.push(response.story[0]);
+    })
+    loadAnimation.value = false;
+}
+
+const redoStory = async () => {
+    isLoaded.value = false;
+    await fetch(`http://localhost:8080/api/story/remake`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': localStorage.getItem("token") || ""
+        },
+        body: JSON.stringify(StoryFromApi.value)
+    }).then(res => res.json()).then((response) => {
+        StoryFromApi.value.story.pop();
+        StoryFromApi.value.story.push(response.story[0]);
+    })
+    isLoaded.value = true;
+
 }
 
 const goBackToGeneration = () => {
     isGenerated.value = false;
-    console.log("go back to generation");
 };
 
 </script>
@@ -142,5 +143,55 @@ const goBackToGeneration = () => {
     z-index: 1;
     left: 50%;
     bottom: 30px;
+}
+
+.lds-hourglass {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.lds-hourglass:after {
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 32px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-hourglass 1.2s infinite;
+}
+
+@keyframes lds-hourglass {
+    0% {
+        transform: rotate(0);
+        animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+
+    50% {
+        transform: rotate(900deg);
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    100% {
+        transform: rotate(1800deg);
+    }
+}
+
+.btn-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn-panel button {
+    margin: 10px;
+    min-width: 256px;
+    font-size: 16px;
 }
 </style>
